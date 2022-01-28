@@ -1,45 +1,56 @@
 # ransomware-KRIs
+I was asked how I could provide quantitaive analysis and rationalization to determining the risk of a ransomware attack.  The reality is there isn't one size fits all, but these are the things I would want to look for.  Something I've learned, but had a suprising amount of pushback on, is that it's ok that a metric is always 0. Many of these, once implemented, should never change, but that doesn't change the fact that knowing their position informs risk. 
 
+## prerequisites
+- Define Mission Critical apps - those apps that are essential for the business to function and those apps that are required for those apps to function
+- Define privileged groups - specifically identity groups (Though parts are a little outdated, there is good reference material [here](https://www.alaniz.io/blog/securing-windows-privileged-access) and [here](https://www.alaniz.io/blog/windows-event-forwarding-resources) that can help with this)
+
+## Primary
 |Summary|Category|Target|Description|References|
 |-|-|-|-|-|
-EDR Coverage - Workstations|Detect|100%|Some sort of EDR installed, tested, and alerts enabled for non compliance on all workstations of all OS.	This should not be a panacea of security, but assuming we are talking the best in class options, it will cover low hanging fruit.||
-EDR Coverage - Servers|Detect|100%|Some sort of EDR installed, tested, and alerts enabled for non compliance on all workstations of all OS.	This should not be a panacea of security, but assuming we are talking the best in class options, it will cover low hanging fruit.||
+|EDR Coverage - Workstations|Detect|100%|Some sort of EDR installed, tested, and alerts enabled for non compliance on all workstations of all OS.	This should not be a panacea of security, but assuming we are talking the best in class options, it will cover low hanging fruit.|
+|EDR Coverage - Servers|Detect|100%|Some sort of EDR installed, tested, and alerts enabled for non compliance on all workstations of all OS.	This should not be a panacea of security, but assuming we are talking the best in class options, it will cover low hanging fruit.|
 |# servers with access to the internet|Protect|0|Many times, for execution of a payload, malware needs to communicate to C2.  This can prevent both infection and communication. Obviously this is very organization specific as well as applciation specific and should be tailored to the need, but erring on the side of less is better.|	
-|End user networks restricted from direct access to server networks|Protect|0/Depends|	|
-|# daily connections from end user network to server network over unapproved TCP ports|Detect|TRUE|This can contain a lot of the choas from ransomware. Force admin access through bastions, restrict database access, force direct access over HTTPS, etc.	|
-|Proxy blocks uncategorized and miscellaneous websites|Protect|TRUE|Know what normal is, and look for deviations.|	
-|ID of all missions critical processes complete|Identify|TRUE|This can contain alot of the choas miscellaneous ransomware. Force admin uncategorized through bastions, and misc database uncategorized, force websites over HTTPS, etc.|
-|Mission Critical Processes that are reliant on network shares|Identify|TRUE|If we don't have a complete inventory of processes which are critical to the function of an organization, then the ability to measure a number of key indicators is not possible.|	
-|Mission critical processes without tested BC|Recover||More important the unrestrictd network shares are the numer of mission critical processes that rely on them.  More than likely Bob's spreadsheet can be reproduced, but if Bob's spreadsheet is critical for the business to generate revenue, then that is another matter entirely.	|
-|Complete application depdnenty map of mission critical processes|Identify|0|This means of those processes that have been identified as mission critical, all of them should have recently tested their business continuity procseses. In other words, can they successfully function with loss of technology or degredation of functionality?	|
-|Critical apps without recently tested backups|Recover|100%|For each mission critical process, all applications that are required for that procses to function have been identified.|
-|# standard user accounts in privileged groups|Identify|0|Of those apps tied to mission critical process, how many have not had their failover or restoration procedures tested recently.|
-|# users who are local admins on teir device|Identify|0|Where standard users are defined as user accts used to check email and browse the internet and these users are members of priv groups	|
-|LAPS deployed an inuse on workstations and servers OR all systems have unique local admin passwords.|Protect|Depends|Without the ability to install software, malware like ransomeware is much harder to propogate.  Any number higher than 0 starts to increase risk of ransware.|
-|# priv users that have login righs to wrokstations|Identify|TRUE|This can reduce he risk of laeral movement if a local admin acct is compromised|	
-|# shared local admin accts on workstations|Identify|0|Privileged users shouldn't be logging into workstations (other than PAWS), they usually bring along priv access with them as well the ability to priv ex on a pwnd device.|
-|# shared local admin accts on servers|Identify|0|How many tools 'require' local admin rights across all sysetms? (Vulnerability scanners, configuration systems, deployment systems, asset management tools, etc)|
-|Restrict network logon for administrators group on workstations enabled|Identify|0|How many tools 'require' local admin rights across all sysetms? (Vulnerability scanners, configuration systems, deployment systems, asset management tools, etc)|
-|Systems with SMB listening|Identify|TRUE|This can go a long way to stopping lateral movement, especially if there are shared usernames.|	
-|System of vendor to VPN connection mapping exists|Identify|Depends|Possibly the most common way for lateral movement or access to file shares to occur	|
-|Completeness of system of vendor to VPN connections|Identify|TRUE|I have seen first hand how a vendor can compromise a network through VPN. It is essential to be able to make a timely and an informed decision to take drastic measures if a vendor has an incident or to protect a vendor if you do.|
-|Incoplete review of entries in system of vendor to VPN connnections in last X days|Identify|100%|It is important to know all of these connections, which vendors they tie to, what access they have, and points of contact.|
-|Last comprehensive review of Bloodhound results|Identify|0|People leave, vendors are terminated, this needs to be reviewed.|
-|IR plan tested at least quarterly|Respond|TRUE|This can be a way APT gets a foot hold.|
-|IR plan contains actions for contacting law enforcement, DFIR, Legal, Microsoft|Respond|TRUE|This can be a way APT gets a foot hold.|
-|Ransomware tabletop completed within last year|Respond|0|An often overlooked privileged group that can add priv access widely across a Windows network	|
-|Escalation pathsuccessfully tested from detection to catastrphic response within minutes|Respond|TRUE|This is the only tool specific (other than Windows) I mention here because it is an instrumental tool in determining paths to priv access which allow far reaching impact.|
-|Unrestricted Network Shares : Open Network Shares|Protect||This can be more common than you think if old or merged AD sysetms and can grant hiddent highly privileged rights|
-|Kerberoasting detection and response|Detect|0|Fairly self explanatory, but there is no need for anyone to be in this group on a daily basis	|
-|Golden Ticket compromise detection and response|Detect|0|This will be a custom list for many orgs, and the numbers will vary.  I suggest making it broad enough to ensure adequaet coverage, but narrow enough so the expected numbers are in the single digits.|
-|Members of Administrators global AD group|Identify|0|This is important to understand the stability and recovery capabilities of key sysetms	|
-|Priv accts with Sid history|Identify||While this is nto top of mind for many tech focused security experts, it is critical in the recover from a ransomware event, especially for smaller orgs	|
-|# domain / enterprise admins|Identify|TRUE|If you detect this, do you know how to respond?	|
-|# other priv group members|Identify|TRUE|	If you detect this, do you know how to respond?	|
-|Number of incidents impacting ‘key’ systems in last X days by system|Identify|0|This helps to understand the architecture and resiliencyrisk of mission critical systems.	|
-|Last cybersecurity insurance review|Identify|0|This should be sysetms where a very low number of hours is expected for downtime, definitely less than 8, probably less than 4. If that is legit the RTO, you should be chaos testing.	|
-|Kerberoasting SOP complete and recently reviewed|Identify|0|Any systems who are not meeting their MTTR expectations during incidents and tests	|
-|Golden Ticket SOP complete and recently reviewed|Identify|TRUE|	I don’t mean checking a box. If you want to respond to ransomware, this needs to be for real tested.	|
-|MC apps with a single point of failure|Recover|TRUE|	Ransomware is going to be an all hands on deck. You don't need to be googling your local FBI office phone number and your forensic consultants sale person.	|
-|Apps of dependent process with RTO less than X and no chaos testing|Recover|TRUE|	Again, very specific esting should be taking place.	|
-|Non Compliance of MTTR|Recover|TRUE|I know first hand of ransomware taking an organization to its knees in a matter of 10 minutes.  There may be no preventing it if it can spread that fast, but from the point of detection there should be a clear path for anyone involved to get the decision to start drastically shutting down systems and connections within 5-10minutes.	|
+|End user networks restricted from direct access to server networks|Protect|0/Depends|For sure, easier said than done, but the amount of unfettered access from the user networks to server networks has a direct correlation to the risk of malware propogation to server networks. This can contain a lot of the choas from ransomware. Force admin access through bastions, restrict database access, force direct access over HTTPS, etc.|
+|# daily connections from end user network to server network over unapproved TCP ports|Detect|TRUE|Know what normal is and look for deviations.|
+|Proxy blocks uncategorized and miscellaneous websites|Protect|TRUE|This can go a long way to blocking C2 communication and other 'low hanging fruit' malware connections.|	
+|ID of all missions critical processes complete|Identify|TRUE|Just as important as preventing infection is assuming it is going to happen and being prepared to recover.  This is the first step to any other steps related to recovery.|
+|Mission Critical Processes that are reliant on network shares|Identify|TRUE|More important than unrestrictd network shares, are the numer of mission critical processes that rely on them.  More than likely Bob's spreadsheet can be reproduced, but if Bob's spreadsheet is critical for the business to generate revenue, then that is another matter entirely if it needs to be available quickly.|	
+|Mission critical processes without tested BC/DR|Recover|0|If you haven't tested it, it doesn't work.|
+|# standard user accounts in privileged groups|Identify|0|Where standard users are defined as user accts used to check email and browse the internet and these users are members of priv groups - this is a common way for malware to escalate privilege and laterally move.|
+|# users who are local admins on their device|Identify|0|Without the ability to install software, malware, like ransomeware, is much harder to propogate.  Any number higher than 0 starts to increase risk of ransomware.|
+|LAPS deployed and in use on workstations and servers OR all systems have unique local admin passwords.|Protect|TRUE|This can reduce the risk of lateral movement if a local admin acct is compromised otherwise, memory dumps of local admin credentials can be used to traverse the network.|
+|# privileged users that have login righs to workstations|Identify|TRUE|Privileged users shouldn't be logging into workstations (other than PAWS), they usually bring along privileged access with them.  Once privileged credentials are used on a device they can be harvested which allows their use across the network.|	
+|# shared local admin accts on workstations|Identify|0|How many tools 'require' local admin rights across all systems? (Vulnerability scanners, configuration systems, deployment systems, asset management tools, etc)|
+|# shared local admin accts on servers|Identify|0|How many tools 'require' local admin rights across all systems? (Vulnerability scanners, configuration systems, deployment systems, asset management tools, etc)|
+|Restrict network logon for administrators group on workstations enabled|Identify|0|This can go a long way to stopping lateral movement, especially if there are shared usernames.|
+|Systems with SMB listening|Identify|TRUE|The more of this that exists, the more likely a ransomware attack will be able to access and encrypt data OR data can be accessed.|	
+|System of vendor to VPN connection mapping exists|Identify|Depends|I have seen first hand how a vendor can compromise a network through VPN. It is essential to be able to make a timely and an informed decision to take drastic measures if a vendor has an incident or to protect a vendor if you do.|
+|Completeness of system of vendor to VPN connections|Identify|TRUE|This bolsters the previous metric to ensure the system exists.||
+|Last comprehensive review of Bloodhound results|Identify|0|This is the only specific vendor product I've mentioned, but it is an essential tool to identify holes in protections against privilege escalation and lateral movement.|[Specterops](https://posts.specterops.io/bloodhound-versus-ransomware-a-defenders-guide-28147dedb73b) and [Bloodhound](https://bloodhoundenterprise.io/)|
+|IR plan tested at least quarterly|Respond|TRUE|I don't mean a 'check the box' test, I mean that practice makes perfect, and teams need to know the IR plan like a reflex.||
+|IR plan contains actions for contacting law enforcement, DFIR, Legal, Microsoft|Respond|TRUE|Again, if ransomware really does it, no one needs to be spending time researching these things.  This could be a blog post in an of itself, but the processes tied to IR need to be practiced and clear in an event like this.|
+|Ransomware tabletop completed within last year|Respond|0|Similar to the other items on the IR plan, ransomware specifically needs to be practiced.||
+|Escalation path successfully tested from detection to catastrphic response within minutes|Respond|TRUE|What I mean here is that if ransomware does happen, someone is going to have to very quickly make a decision about cutting off or shutting down key vendors or systems.  Getting to that decision needs to happen very fast.||
+
+## Secondary
+|Summary|Category|Target|Description|References|
+|-|-|-|-|-|
+|Unrestricted Network Shares : Open Network Shares|Protect||||
+|Complete application dependenct map of mission critical processes|Identify|0|||
+|Kerberoasting detection and response|Detect|0|||
+|Golden Ticket compromise detection and response|Detect|0|||
+|Members of Administrators global AD group|Identify|0|||
+|Priv accts with Sid history|Identify||||
+|# domain / enterprise admins|Identify|TRUE|||
+|# other priv group members|Identify|TRUE|||
+|Number of incidents impacting ‘key’ systems in last X days by system|Identify|0|||
+|Kerberoasting SOP complete and recently reviewed|Identify|0|||
+|Golden Ticket SOP complete and recently reviewed|Identify|TRUE|||
+
+## Tertiary
+|Summary|Category|Target|Description|References|
+|-|-|-|-|-|
+|MC apps with a single point of failure|Recover|TRUE|||
+|Apps of dependent process with RTO less than X and no chaos testing|Recover|TRUE|||
+|Non Compliance of MTTR|Recover|TRUE|||
