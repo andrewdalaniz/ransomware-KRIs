@@ -8,6 +8,8 @@ I was asked how I could provide quantitaive analysis and rationalization to dete
 ## Primary
 |Summary|Category|Target|Description|References|
 |-|-|-|-|-|
+|Recent 'pen tests' against defined scenarios and TTPs related to ransomeware|Detect|Depends|||
+|% of priv accts required to use PAWs for access to Tier 0|Prevent|100%||[PAWs and other priv access strategy](https://learn.microsoft.com/en-us/security/privileged-access-workstations/security-rapid-modernization-plan)|
 |MFA coverage for external ingress points|Protect|100%|Without getting into nuances of implementation or the efficacy of technologies, having this is better than not, and if you don't, your risk of ransomware and other compromise is high|
 |Management protocols exposed to the internet (MFA or not)|Protect|0|Lets keep it simple. Management interfaces should not be available directly from the internet. Period.|
 |EDR Coverage - Workstations|Detect|100%|Some sort of EDR installed, tested, and alerts enabled for non compliance on all workstations of all OS.	This should not be a panacea of security, but assuming we are talking the best in class options, it will cover low hanging fruit.|
